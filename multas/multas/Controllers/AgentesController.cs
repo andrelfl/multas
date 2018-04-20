@@ -18,7 +18,8 @@ namespace multas.Controllers
         // GET: Agentes
         public ActionResult Index()
         {
-            return View(db.Agentes.ToList());
+            var listaAgentes = db.Agentes.ToList().OrderBy(a=>a.Nome);
+            return View(listaAgentes);
         }
 
         // GET: Agentes/Details/5
@@ -26,14 +27,14 @@ namespace multas.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
-            Agentes agentes = db.Agentes.Find(id);
-            if (agentes == null)
+            Agentes agente = db.Agentes.Find(id);
+            if (agente == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Index");
             }
-            return View(agentes);
+            return View(agente);
         }
 
         // GET: Agentes/Create
@@ -91,14 +92,14 @@ namespace multas.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
-            Agentes agentes = db.Agentes.Find(id);
-            if (agentes == null)
+            Agentes agente = db.Agentes.Find(id);
+            if (agente == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Index");
             }
-            return View(agentes);
+            return View(agente);
         }
 
         // POST: Agentes/Edit/5
@@ -106,15 +107,15 @@ namespace multas.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Nome,Fotografia,Esquadra")] Agentes agentes)
+        public ActionResult Edit([Bind(Include = "ID,Nome,Fotografia,Esquadra")] Agentes agente)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(agentes).State = EntityState.Modified;
+                db.Entry(agente).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(agentes);
+            return View(agente);
         }
 
         // GET: Agentes/Delete/5
@@ -122,12 +123,12 @@ namespace multas.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Index");
             }
             Agentes agentes = db.Agentes.Find(id);
             if (agentes == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Index");
             }
             return View(agentes);
         }
@@ -137,10 +138,17 @@ namespace multas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Agentes agentes = db.Agentes.Find(id);
-            db.Agentes.Remove(agentes);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            Agentes agente = db.Agentes.Find(id);
+            try {
+                
+                db.Agentes.Remove(agente);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            catch (Exception){
+                ModelState.AddModelError("", string.Format("Nao foi possivel remover o Agente '{0}', porque existem {1} multas associadas a ele.", agente.Nome, agente.ListaDeMultas.Count));
+            }
+            return View(agente);
         }
 
         protected override void Dispose(bool disposing)
