@@ -49,7 +49,13 @@ namespace multas.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Nome,Esquadra")] Agentes agente, HttpPostedFileBase fileUploadFotografia)
         {
-            int novoID = db.Agentes.Max(a => a.ID) + 1;
+            int novoID = 0;
+
+            if (db.Agentes.Count() == 0){
+                novoID = 1;
+            }else {
+                novoID = db.Agentes.Max(a => a.ID) + 1;
+            }
 
             agente.ID = novoID;
 
@@ -63,13 +69,18 @@ namespace multas.Controllers
                 return View(agente);
             }
 
-
             if (ModelState.IsValid)
             {
-                db.Agentes.Add(agente);
-                db.SaveChanges();
-                fileUploadFotografia.SaveAs(caminhoParaFotografia);
-                return RedirectToAction("Index");
+                try{
+                    db.Agentes.Add(agente);
+                    db.SaveChanges();
+                    fileUploadFotografia.SaveAs(caminhoParaFotografia);
+                    return RedirectToAction("Index");
+                }
+                catch(Exception){
+                    ModelState.AddModelError("", "Ocorreu um erro nao determinado na criacao do novo agente");
+                }
+                
             }
 
             return View(agente);

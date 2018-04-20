@@ -15,13 +15,13 @@ namespace multas.Models
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]// Impede que um novo agente tenha um id automatico
         public int ID { get; set; }
         [Required(ErrorMessage ="O {0} é de preenchimento obrigatorio")]
         [RegularExpression("[A-ZÂÍ][a-záéíóúãõàèìòâêîôûäëïöüç]+(( | de | da| dos | d' |-)[A-ZÂÍ][a-záéíóúãõàèìòâêîôûäëïöüç]+){1,3}", ErrorMessage = "O nome e invalido, ver FAQ para saber como escrever um melhor.")]
         [StringLength(40)]
         public string Nome { get; set; }
-        [Required(ErrorMessage = "A {0} é de preenchimento obrigatorio")]
+        //[Required(ErrorMessage = "A {0} é de preenchimento obrigatorio")]
         public string Fotografia { get; set; }
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatorio")]
         [RegularExpression("[A-Za-zé 0-9-]+", ErrorMessage = "burro")]
